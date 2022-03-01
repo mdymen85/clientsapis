@@ -10,15 +10,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Data
-@Getter
 public class ClientDomain {
 	
 	@Autowired
 	private List<IDomainValidations> validations;
 
-	private final String name;
-	private final String clientId;
-	private final Integer age;
+	private String name;
+	private String clientId;
+	private Integer age;
 	
 	public ClientDomain() {
 		this.name = null;

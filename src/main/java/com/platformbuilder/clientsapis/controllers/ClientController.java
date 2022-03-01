@@ -1,5 +1,6 @@
 package com.platformbuilder.clientsapis.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,10 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api")
 @Slf4j
-@RequiredArgsConstructor
 public class ClientController {
 
-	private final IClientService clientService;
+	@Autowired
+	private IClientService clientService;
 	
 	@RequestMapping(value = "/v1/client", method = RequestMethod.POST)
 	public ResponseEntity<ClientDTO> create(@RequestBody ClientDTO clientDTO) {

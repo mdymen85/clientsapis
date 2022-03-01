@@ -2,6 +2,7 @@ package com.platformbuilder.clientsapis.exception;
 
 import java.util.Locale;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,10 +12,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import lombok.RequiredArgsConstructor;
 
 @ControllerAdvice
-@RequiredArgsConstructor
 public class InformationControllerAdvice {
 
-	private final MessageSource messageSource;
+	@Autowired
+	private MessageSource messageSource;
 //	
 	@ExceptionHandler(ClientAlreadyExistException.class) 
 	public ResponseEntity<ResponseErrorObject> buildingBasicInformationException(ClientAlreadyExistException error) {			

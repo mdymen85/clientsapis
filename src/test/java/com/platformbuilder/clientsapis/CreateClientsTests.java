@@ -4,34 +4,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.platformbuilder.clientsapis.dtos.ClientDTO;
 import com.platformbuilder.clientsapis.exception.ClientAlreadyExistException;
 import com.platformbuilder.clientsapis.repository.entities.ClientEntity;
-import com.platformbuilder.clientsapis.service.IClientService;
 
 
 @SpringBootTest
 class CreateClientsTests extends MysqlContainerService {
-	
-	@Autowired
-	private IClientService clientService;
-	
-	@Autowired
-	private TxDelegateService txDelegateService;
-	
-	@Autowired
-	private ModelMapper mapper;
-	
-	@BeforeAll
-	public static void init() {
-		mysql.start();
-	}
     
 	/**
 	 * Scenario: creating new client.
@@ -91,12 +73,12 @@ class CreateClientsTests extends MysqlContainerService {
 	 * Excepted: to receive the same object that already exists and not try to duplicate the client in the database
 	 */
 	@Test
-	void idempotentClientCreationSucess() {
+	void idempotentClientCreationSuccess() {
 		
 		var newClient = ClientEntity.builder()
 				.age(25)
 				.name("Martin")
-				.clientId("XX1234")
+				.clientId("XX1237")
 				.build();
 		
 		var clientEntity = txDelegateService.create(newClient);
