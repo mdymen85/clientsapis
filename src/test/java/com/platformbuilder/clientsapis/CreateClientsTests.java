@@ -5,15 +5,18 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.platformbuilder.clientsapis.dtos.ClientDTO;
 import com.platformbuilder.clientsapis.exception.ClientAlreadyExistException;
-import com.platformbuilder.clientsapis.repository.entities.ClientEntity;
+import com.platformbuilder.clientsapis.service.MapperService;
 
 
 @SpringBootTest
-class CreateClientsTests extends MysqlContainerService {
+class CreateClientsTests extends AbstractClassTests {
+	
+	@Autowired
+	private MapperService mapperService;
     
 	/**
 	 * Scenario: creating new client.
@@ -22,42 +25,34 @@ class CreateClientsTests extends MysqlContainerService {
 	@Test
 	void createClient() {
 		
-		var newClient = ClientEntity.builder()
-				.age(25)
-				.name("Martin")
-				.clientId("XX1234")
-				.build();
+		var newClient = ClientFactory.getClient();
 		
 		var clientEntity = txDelegateService.create(newClient);
 		
 		var client = this.clientService.load(clientEntity.getClientId());
 		
-		assertEquals(newClient.getAge(), client.getAge());
-		assertEquals(newClient.getClientId(), client.getClientId());
-		assertEquals(newClient.getName(), client.getName());
-		assertEquals(clientEntity.getId(), client.getId());
+		this.assertValidations(newClient, client);
 		
 	}
 	
 	/**
-	 * Scenario: Trying to create the same client, with the same clientId and different information, twice
+	 * Scenario: Trying to create the same client, with the same clientId and different information.
 	 * 
 	 * Expected: {@link ClientAlreadyExistException}
 	 */
 	@Test
 	void idempotentClientCreationError() {
 		
-		var newClient = ClientEntity.builder()
-				.age(25)
-				.name("Martin")
-				.clientId("XX1234")
-				.build();
+		var newClient = ClientFactory.getClient();
 		
 		txDelegateService.create(newClient);
 		
 		try {
 		
-			this.clientService.create(mapper.map(newClient, ClientDTO.class));
+			var client = mapperService.toResponseClientDTO(newClient);
+			client.setName("Peloton");
+			
+			this.clientService.create(client);
 			fail();
 			
 		}
@@ -75,20 +70,13 @@ class CreateClientsTests extends MysqlContainerService {
 	@Test
 	void idempotentClientCreationSuccess() {
 		
-		var newClient = ClientEntity.builder()
-				.age(25)
-				.name("Martin")
-				.clientId("XX1237")
-				.build();
+		var newClient = ClientFactory.getClient();
 		
 		var clientEntity = txDelegateService.create(newClient);
 		
-		var clientDTO = this.clientService.create(mapper.map(newClient, ClientDTO.class));
+		var clientDTO = this.clientService.create(mapperService.toResponseClientDTO(clientEntity));
 		
-		assertEquals(clientEntity.getAge(), clientDTO.getAge());
-		assertEquals(clientEntity.getClientId(), clientDTO.getClientId());
-		assertEquals(clientEntity.getName(), clientDTO.getName());
-		assertEquals(clientEntity.getId(), clientDTO.getId());
+		this.assertValidations(clientEntity, clientDTO);
 		
 	}
 	

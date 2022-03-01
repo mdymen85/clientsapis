@@ -6,11 +6,11 @@ import static org.junit.Assert.fail;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.platformbuilder.clientsapis.entities.Client;
 import com.platformbuilder.clientsapis.exception.ClientNotFoundException;
-import com.platformbuilder.clientsapis.repository.entities.ClientEntity;
 
 @SpringBootTest
-public class DeleteClientsTests extends MysqlContainerService {
+public class DeleteClientsTests extends AbstractClassTests {
 
 	/**
 	 * Scenario: create and then delete a client.
@@ -20,11 +20,7 @@ public class DeleteClientsTests extends MysqlContainerService {
 	 */
 	@Test
 	public void deleteClient() {
-		var newClient = ClientEntity.builder()
-				.age(25)
-				.name("Martin")
-				.clientId("XX1235")
-				.build();
+		var newClient = ClientFactory.getClient();
 		
 		this.txDelegateService.create(newClient);
 		
@@ -39,7 +35,13 @@ public class DeleteClientsTests extends MysqlContainerService {
 			assertTrue(true);
 		}
 	}
-		
+	
+	/**
+	 * 
+	 * Scenario: Trying to delete a client that does not exists.
+	 * 
+	 * Expected: {@link ClientNotFoundException}
+	 */ 
 	@Test
 	public void deleteUnexistingClient() {
 		

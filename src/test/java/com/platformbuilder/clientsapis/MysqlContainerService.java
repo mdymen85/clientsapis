@@ -5,46 +5,62 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeAll;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mapping.model.IdPropertyIdentifierAccessor;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
-import com.platformbuilder.clientsapis.service.IClientService;
+import com.platformbuilder.clientsapis.service.interfaces.IClientService;
 
+/**
+ * Class that configure a docker container with mysql for testing purpose
+ * 
+ * @author Martin Dymenstein
+ *
+ */
 @Testcontainers
 public class MysqlContainerService {
 	
-	@Autowired
-	protected IClientService clientService;
+	private static String USERNAME = "root";
+	private static String PASSWORD = "mdymen_pass";
+	private static String INIT_SCRIPT = "data.sql";
+	private static String DATABASE = "clientsapis_db";
 	
-	@Autowired
-	protected TxDelegateService txDelegateService;
-	
-	@Autowired
-	protected ModelMapper mapper;
+	private static String CONNECTION_STRING = "jdbc:mysql://localhost:";
 	
 	@SuppressWarnings({ "rawtypes", "deprecation" })
-	public static MySQLContainer mysql = (MySQLContainer) new MySQLContainer<>()
-			.withInitScript("data.sql")
-			.withUsername("root")
-			.withDatabaseName("clientsapis_db")
-			.withPassword("mdymen_pass");
+	public static MySQLContainer mysql = (MySQLContainer) new MySQLContainer<>()			
+			.withUsername(USERNAME)
+			.withPassword(PASSWORD)
+			.withDatabaseName(DATABASE)
+			.withInitScript(INIT_SCRIPT);
 	
 	@ComponentScan(basePackages = "com.platformbuilder.clientsapis.*")
 	@Configuration
 	static class MySqlConfiguration {
 		
 		@Bean(name = "mysqlDataSource")
-		public DataSource createDataSource() {
+		public DataSource createDataSource() {		
+			
 			var datasource = new MysqlDataSource();
-			datasource.setUrl("jdbc:mysql://localhost:" + mysql.getFirstMappedPort() + "/clientsapis_db");
-			datasource.setUser("root");
-			datasource.setPassword("mdymen_pass");
+			datasource.setUrl(getConnectionString());
+			datasource.setUser(USERNAME);
+			datasource.setPassword(PASSWORD);
 			
 			return datasource;
+		}
+		
+		private String getConnectionString() {
+			StringBuilder str = new StringBuilder(CONNECTION_STRING);
+			str.append(mysql.getFirstMappedPort());
+			str.append("/");
+			str.append(DATABASE);
+			
+			return str.toString();
 		}
 		
 	}

@@ -13,8 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClientDTO {
-
-	private Long id;
 	
 	@NotNull
 	private String clientId;

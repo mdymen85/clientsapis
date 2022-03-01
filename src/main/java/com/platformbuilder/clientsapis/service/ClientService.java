@@ -1,19 +1,23 @@
 package com.platformbuilder.clientsapis.service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.platformbuilder.clientsapis.domain.ClientDomain;
 import com.platformbuilder.clientsapis.dtos.ClientDTO;
+import com.platformbuilder.clientsapis.dtos.ResponseClientDTO;
+import com.platformbuilder.clientsapis.dtos.ResponseClientsDTO;
+import com.platformbuilder.clientsapis.entities.Client;
+import com.platformbuilder.clientsapis.entities.validation.IDomainValidations;
 import com.platformbuilder.clientsapis.exception.ClientAlreadyExistException;
 import com.platformbuilder.clientsapis.exception.ClientNotFoundException;
 import com.platformbuilder.clientsapis.repository.ClientRepository;
-import com.platformbuilder.clientsapis.repository.entities.ClientEntity;
+import com.platformbuilder.clientsapis.service.interfaces.IClientService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,32 +29,32 @@ import lombok.extern.slf4j.Slf4j;
 public class ClientService implements IClientService {
 
 	private final ClientRepository clientRepository;
-	private final IMapperService mapperService;
-	private final ModelMapper mapper;
+	private final MapperService mapperService;
+	private final List<IDomainValidations> validations;
 	
 	@Override
-	public ClientDTO create(ClientDTO clientDTO) {
+	public ResponseClientDTO create(ClientDTO clientDTO) {
 		
-		var clientDomain = mapperService.toClientDomain(clientDTO);
+		var client = mapperService.toClientEntity(clientDTO);
 						
-		var clientEntity = mapperService.toClientEntity(clientDomain);
+		validations.stream().forEach(v -> v.validation(client));	
 		
 		var optClientSaved = clientRepository.findByClientId(clientDTO.getClientId());
 		
-		if (existsAndIsEquals(optClientSaved, clientEntity)) {
+		if (existsAndIsNotEquals(optClientSaved, client)) {
 			throw new ClientAlreadyExistException(clientDTO.getClientId());
 		}
 		
 		//idempotency
 		else if (optClientSaved.isPresent()) {
-			return mapper.map(optClientSaved.get(), ClientDTO.class);
+			return mapperService.toResponseClientDTO(client);
 		}
 		
-		var createdClientEntity = this.save(clientDomain);
+		var createdClientEntity = this.save(client);
 		
-		clientDTO.setId(createdClientEntity.getId());
+		var response = this.mapperService.toResponseClientDTO(createdClientEntity);
 		
-		return clientDTO;
+		return response;
 
 		
 	}
@@ -64,58 +68,74 @@ public class ClientService implements IClientService {
 	}
 
 
+	@CacheEvict(value = "client", key = "#clientId")
 	@Override
-	public ClientDTO update(String clientId, ClientDTO clientDTO) {
+	public ResponseClientDTO update(String clientId, ClientDTO clientDTO) {
 		
-//		var clientEntity = this.findByClientIdOrError(clientId);
+		var clientEntity = this.findByClientIdOrError(clientId);
 		
-		//clientEntity
+		clientEntity.setAge(clientDTO.getAge());
+		clientEntity.setClientId(clientDTO.getClientId());
+		clientEntity.setName(clientDTO.getName());
 		
+		var newClient = this.clientRepository.save(clientEntity);								
 		
-		return null;
+		return mapperService.toResponseClientDTO(newClient);
 		
 	}
 
 
+	@Cacheable(value = "client", key = "#clientId")
 	@Override
-	public ClientDTO load(String clientId) {
-//		var clientEntity = this.findByClientIdOrError(clientId);
-//		return mapper.map(clientEntity, ClientDTO.class);
-		return null;
+	public ResponseClientDTO load(String clientId) {
+		var clientEntity = this.findByClientIdOrError(clientId);		
+		return this.mapperService.toResponseClientDTO(clientEntity);
 	}
 	
-	private boolean existsAndIsEquals(Optional<ClientEntity> optClientEntityLoaded, ClientEntity clientEntityForSave) {
+	private boolean existsAndIsNotEquals(Optional<Client> optClientEntityLoaded, Client clientEntityForSave) {
 		return optClientEntityLoaded.isPresent() && !optClientEntityLoaded.get().equals(clientEntityForSave);
 	}
 
 
-	private ClientEntity save(ClientDomain clientDomain) {
-		
-//		var clientEntity = mapper.map(clientDomain, ClientEntity.class);		
-		return null;
-//		clientRepository.save(clientEntity);
+	private Client save(Client client) {
+
+		return clientRepository.save(client);
 		
 	}
 	
 	/**
-	 * Return the {@link ClientEntity} Client database Entity by clientId
+	 * Return the {@link Client} database Entity by clientId
 	 * 
-	 * @param clientId client unique identificator
+	 * @param clientId client unique identification
 	 * @return the Client database Entity by clientId
 	 * @exception ClientNotFoundException
 	 */
-	private ClientEntity findByClientIdOrError(String clientId) {
-//		var optClientEntity = this.clientRepository.findByClientId(clientId);
-//		
-//		if (optClientEntity.isEmpty()) {
-//			throw new ClientNotFoundException(clientId);
-//		}
-//		
-//		return optClientEntity.get();
+	private Client findByClientIdOrError(String clientId) {
+		var optClientEntity = this.clientRepository.findByClientId(clientId);
 		
-		return null;
+		if (optClientEntity.isEmpty()) {
+			throw new ClientNotFoundException(clientId);
+		}
+		
+		return optClientEntity.get();
+
 	}
-	
+
+	/**
+	 * Load the clients without any pagination
+	 * 
+	 * @return Clients DTO list
+	 */
+	@Override
+	public ResponseClientsDTO load() {
+		List<Client> clients = this.clientRepository.findAll();
+		
+		List<ResponseClientDTO> responseClients = clients.stream()
+				.map(c -> this.mapperService.toResponseClientDTO(c))
+				.collect(Collectors.toList());
+		
+		return new ResponseClientsDTO(responseClients);
+	}
 
 
 }
