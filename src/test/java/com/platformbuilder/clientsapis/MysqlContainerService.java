@@ -3,18 +3,12 @@ package com.platformbuilder.clientsapis;
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mapping.model.IdPropertyIdentifierAccessor;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
 import com.mysql.cj.jdbc.MysqlDataSource;
-import com.platformbuilder.clientsapis.service.interfaces.IClientService;
 
 /**
  * Class that configure a docker container with mysql for testing purpose

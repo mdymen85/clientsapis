@@ -7,7 +7,18 @@ public class SearchCriteria {
 
 	private String name;
 	private String clientId;
-	private int age;
-	private Operation operation;
+	private AgeCriteria ageCriteria;
+	
+	public boolean isNameNull() {
+		return name == null;
+	}
+	
+	public boolean isClientIdNull() {
+		return clientId == null;
+	}
+	
+	public boolean isAgeCriteriaNull() {
+		return ageCriteria == null;
+	}
 	
 }

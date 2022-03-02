@@ -36,20 +36,5 @@ public class LoadClientsTests extends AbstractClassTests {
 		assertValidations(client2, clientLoaded2);
 	}
 	
-	@Test
-	public void loadWithSpec() {
-		var client1 = ClientFactory.getClient();
-		
-		this.txDelegateService.create(client1);
-		
-		var criteria = new SearchCriteria();
-		criteria.setName(client1.getName());
-		
-		var response = this.clientCriteriaService.load(client1.getClientId(), criteria);
-		
-		assertValidations(client1, response.getClients().get(0));
-		
-	}
-	
 	
 }

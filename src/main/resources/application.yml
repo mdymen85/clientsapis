@@ -6,6 +6,9 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
   jpa:
     show-sql: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 
 application:
   page-size: 5
