@@ -1,7 +1,5 @@
 package com.platformbuilder.clientsapis.controllers;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api")
 @Slf4j
 @RequiredArgsConstructor
+//http://localhost:8080/swagger-ui/#/
 public class ClientController {
 
 	private final IClientService clientService;
@@ -68,6 +67,16 @@ public class ClientController {
 		log.info("Loading all clients...");
 		
 		ResponseClientsDTO clients = this.clientService.load();
+		
+		return new ResponseEntity<ResponseClientsDTO>(clients, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/v1/client/page/{page}", method = RequestMethod.GET)
+	public ResponseEntity<ResponseClientsDTO> getByPage(@PathVariable Integer page) {
+		
+		log.info("Loading all clients from the page {}.", page);
+		
+		ResponseClientsDTO clients = this.clientService.load(page);
 		
 		return new ResponseEntity<ResponseClientsDTO>(clients, HttpStatus.OK);
 	}

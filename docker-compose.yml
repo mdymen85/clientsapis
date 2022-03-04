@@ -1,0 +1,22 @@
+version: '3.3'
+
+services:
+  clientsapis-mysql:
+    container_name: clientsapis-mysql
+    image: mysql:5.7
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=mdymen_pass
+    volumes:
+      - "./src/main/resources/data.sql:/docker-entrypoint-initdb.d/data.sql"
+  outboxtable-base:
+    container_name: mdymen85/clientsapis
+    build:
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - 8080:8080
+    depends_on:
+      - clientsapis-mysql

@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +15,6 @@ import com.platformbuilder.clientsapis.dtos.ClientDTO;
 import com.platformbuilder.clientsapis.dtos.ResponseClientDTO;
 import com.platformbuilder.clientsapis.dtos.ResponseClientsDTO;
 import com.platformbuilder.clientsapis.entities.Client;
-import com.platformbuilder.clientsapis.entities.validation.IDomainValidations;
 import com.platformbuilder.clientsapis.exception.ClientAlreadyExistException;
 import com.platformbuilder.clientsapis.exception.ClientNotFoundException;
 import com.platformbuilder.clientsapis.repository.ClientRepository;
@@ -28,16 +29,16 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ClientService implements IClientService {
 
+	@Value("${application.page-size:5}")
+	private int pageSizeClientRegister;
+	
 	private final ClientRepository clientRepository;
 	private final MapperService mapperService;
-	private final List<IDomainValidations> validations;
 	
 	@Override
 	public ResponseClientDTO create(ClientDTO clientDTO) {
 		
-		var client = mapperService.toClientEntity(clientDTO);
-						
-		validations.stream().forEach(v -> v.validation(client));	
+		var client = mapperService.toClientEntity(clientDTO);					
 		
 		var optClientSaved = clientRepository.findByClientId(clientDTO.getClientId());
 		
@@ -47,7 +48,7 @@ public class ClientService implements IClientService {
 		
 		//idempotency
 		else if (optClientSaved.isPresent()) {
-			return mapperService.toResponseClientDTO(client);
+			return mapperService.toResponseClientDTO(optClientSaved.get());
 		}
 		
 		var createdClientEntity = this.save(client);
@@ -93,7 +94,7 @@ public class ClientService implements IClientService {
 	}
 	
 	private boolean existsAndIsNotEquals(Optional<Client> optClientEntityLoaded, Client clientEntityForSave) {
-		return optClientEntityLoaded.isPresent() && !optClientEntityLoaded.get().equals(clientEntityForSave);
+		return optClientEntityLoaded.isPresent() && !optClientEntityLoaded.get().basicEquals(clientEntityForSave);
 	}
 
 
@@ -121,15 +122,21 @@ public class ClientService implements IClientService {
 
 	}
 
-	/**
-	 * Load the clients without any pagination
-	 * 
-	 * @return Clients DTO list
-	 */
 	@Override
 	public ResponseClientsDTO load() {
 		List<Client> clients = this.clientRepository.findAll();
 		
+		return this.toResponseFromList(clients);	
+	}
+
+	@Override
+	public ResponseClientsDTO load(Integer page) {
+		List<Client> clients = this.clientRepository.findAll(PageRequest.of(page, pageSizeClientRegister));
+		
+		return this.toResponseFromList(clients);
+	}
+	
+	private ResponseClientsDTO toResponseFromList(List<Client> clients) {
 		List<ResponseClientDTO> responseClients = clients.stream()
 				.map(c -> this.mapperService.toResponseClientDTO(c))
 				.collect(Collectors.toList());

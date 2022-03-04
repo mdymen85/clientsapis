@@ -38,6 +38,12 @@ public class Client {
 	@CreationTimestamp
 	private Instant created;
 	
+	public boolean basicEquals (Client client) {
+		return name.equals(client.getName()) 
+				&& clientId.equals(client.getClientId()) 
+				&& age.equals(client.getAge());
+	}
+	
 	
 	
 }

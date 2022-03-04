@@ -1,13 +1,18 @@
 package com.platformbuilder.clientsapis.dtos;
 
+import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 
 @Data
+@ToString
+@Builder
 public class SearchCriteria {
 
 	private String name;
 	private String clientId;
-	private AgeCriteria ageCriteria;
+	private final Integer age;
+	private final Operation operation;
 	
 	public boolean isNameNull() {
 		return name == null;
@@ -18,7 +23,7 @@ public class SearchCriteria {
 	}
 	
 	public boolean isAgeCriteriaNull() {
-		return ageCriteria == null;
+		return age == null;
 	}
 	
 }

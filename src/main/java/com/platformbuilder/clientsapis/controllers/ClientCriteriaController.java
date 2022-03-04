@@ -26,7 +26,11 @@ public class ClientCriteriaController {
 	@RequestMapping(value = "/v1/client/{clientId}/criteria", method = RequestMethod.GET) 
 	public ResponseEntity<ResponseClientsDTO> get(@PathVariable String clientId, @RequestBody SearchCriteria criteria) {
 		
+		log.info("Searching for information by criteria {} for the client {}.", criteria, clientId);
+		
 		var clients = this.clientCriteriaService.load(clientId, criteria);
+		
+		log.info("Returning clients information with the criteria {} for the client {}.", criteria, clientId);
 		
 		return new ResponseEntity<ResponseClientsDTO>(clients, HttpStatus.OK);
 		

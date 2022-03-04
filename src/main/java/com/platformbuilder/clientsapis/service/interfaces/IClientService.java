@@ -1,11 +1,8 @@
 package com.platformbuilder.clientsapis.service.interfaces;
 
-import java.util.List;
-
 import com.platformbuilder.clientsapis.dtos.ClientDTO;
 import com.platformbuilder.clientsapis.dtos.ResponseClientDTO;
 import com.platformbuilder.clientsapis.dtos.ResponseClientsDTO;
-import com.platformbuilder.clientsapis.dtos.SearchCriteria;
 import com.platformbuilder.clientsapis.exception.ClientAlreadyExistException;
 import com.platformbuilder.clientsapis.exception.ClientNotFoundException;
 
@@ -18,7 +15,6 @@ import com.platformbuilder.clientsapis.exception.ClientNotFoundException;
  *
  */
 public interface IClientService {
-
 	
 	/**
 	 * Create a new client. If the client already exists with the same values, will return it.
@@ -36,13 +32,22 @@ public interface IClientService {
 	 */
 	public void delete(String clientId);
 	
+	/**
+	 * Update a client by his clientId
+	 * 
+	 * @param clientId
+	 * @param clientDTO
+	 * @return The client updated
+	 * @exception {@link ClientNotFoundException}
+	 */
 	public ResponseClientDTO update(String clientId, ClientDTO clientDTO);
 	
 	/**
 	 * Load a client by his id
 	 * 
 	 * @param clientId
-	 * @return {@link ClientNotFoundException}
+	 * @return 
+	 * @exception {@link ClientNotFoundException}
 	 */
 	public ResponseClientDTO load(String clientId);
 
@@ -51,6 +56,14 @@ public interface IClientService {
 	 * @return list of clients
 	 */
 	public ResponseClientsDTO load();
+
+	/**
+	 * Load clients by the page
+	 * 
+	 * @param page number
+	 * @return list of clients at specific page
+	 */
+	public ResponseClientsDTO load(Integer page);
 	
 	
 }
