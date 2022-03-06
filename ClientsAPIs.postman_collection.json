@@ -1,0 +1,101 @@
+{
+	"info": {
+		"_postman_id": "9252159a-a3e5-4f8b-bce5-2dad63e98c9b",
+		"name": "ClientsAPIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Client APis",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"clientId\":\"xxxx\",\n    \"name\":\"Martin\",\n    \"age\":36\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/v1/client",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"client"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Client APis",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/v1/client/xxxx",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"client",
+						"xxxx"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Client APis",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"clientId\":\"xxx1\",\n    \"age\": 37,\n    \"name\":\"pepe\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/v1/client/xxxx",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"client",
+						"xxxx"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

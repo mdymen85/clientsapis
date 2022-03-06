@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api")
 @Slf4j
 @RequiredArgsConstructor
-//http://localhost:8080/swagger-ui/#/
 public class ClientController {
 
 	private final IClientService clientService;

@@ -11,12 +11,23 @@ services:
       - MYSQL_ROOT_PASSWORD=mdymen_pass
     volumes:
       - "./src/main/resources/data.sql:/docker-entrypoint-initdb.d/data.sql"
-  outboxtable-base:
-    container_name: mdymen85/clientsapis
+    networks:
+      - clientsapi-network
+  clientsapis:
+    container_name: clientsapis
+    environment:
+      - MYSQL_HOST=clientsapis-mysql
     build:
       dockerfile: Dockerfile
       context: .
     ports:
       - 8080:8080
+    networks:
+      - clientsapi-network
     depends_on:
       - clientsapis-mysql
+      
+
+networks:
+  clientsapi-network:
+    external: true
