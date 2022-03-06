@@ -4,11 +4,12 @@
 
 ### Introduction
 
-This was an excercise from the company Platform Builders, but isnt 100% complete because i already spent many hours, and then i decided to stop because with the code and technologies that i used, i think that i prove the point that i know about coding.
+This was an excercise from the company Platform Builders, but isnt 100% complete because i already spent many hours, and then i decided to stop because with the code and technologies that i used, i think that i prove the point that i know about coding. I didnt take much care about swagger completition, in order to invest more time in code.
 
 ## Technologies
 
  - Spring Boot
+ - Spring Data
  - Lombok
  - Mapstruct
  - Swagger-Ui
@@ -22,6 +23,10 @@ This was an excercise from the company Platform Builders, but isnt 100% complete
 ### Spring Boot
 
 The application was developed using JAVA Spring Boot
+
+### Spring Data
+
+To simplify the connection between the Database and the Application, i used Spring Data.
 
 ### Lombok
 
@@ -128,6 +133,14 @@ I develop a docker-compose to run the application and the database at the same t
 There is a file called **data.sql** that has the sql statements to create the database, use it and create the table that the application use.
 
 
+## Idempontent POST
+
+The POST operation must be idempotent. This means that if i try to save an existing client, with the same data, the API doesnt need to throw an exception, because doesnt make sense to try to save the client again if already was saved. So the API will return the existing client without throwing any error. 
+In the case that the client with the same identification is trying to be saved again, but with other attributes, the appication will throw an exception, because understands that its violate idempontecy.
+
+## Hexagonal Architecture
+
+The layers communicates between them by interfaces. For example the controller just define that will use a **IClientService** interface, that its implemented inside the application domain, being the entrypoint.
 
 ## Conclutions
 
