@@ -13,6 +13,7 @@ This was an excercise from the company Platform Builders, but isnt 100% complete
  - Mapstruct
  - Swagger-Ui
  - Controller Advice
+ - Cache
  - Testcontainer
  - Spring Specification
  - Docker
@@ -78,6 +79,10 @@ In order to document the swagger, i used Swagger-ui. To access to this documenta
 
 To throw exception i used a Controller Advice. So when some exception is captured, the advice will handle and throw the exception properly, with all the information needed.
 
+### Cache
+
+Just to show some cache simple use, i annotated a method with a Cache, and then, after update this cached object, i evict the cache to get the object again an refresh the cache. I also developed a test to show how the cache doesnt go to the database to load a cached object.
+
 ### Testcontainer
 
 For testing purpose i develop a testcontainer to run a docker with the mysql database, so in every test session, it will lunch a new mysql container and test the application using that database.
@@ -121,6 +126,8 @@ I develop a docker-compose to run the application and the database at the same t
 ### Mysql
 
 There is a file called **data.sql** that has the sql statements to create the database, use it and create the table that the application use.
+
+
 
 ## Conclutions
 
