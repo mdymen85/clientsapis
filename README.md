@@ -1,4 +1,4 @@
-# Exercise for ![Platform Builders](https://platformbuilders.io/)
+# Exercise for [Platform Builders](https://platformbuilders.io/)
 
 ## Clients APIs
 
